@@ -1,0 +1,104 @@
+<html>
+  <head>
+    <title>ParticleJS Example - By Ryan Sandor Richards</title>
+  </head>
+  <body>
+    <div id="wrapper">
+      <h1 class="stylized">ParticleJS Demo</h1>
+      <canvas id="canvas" width="600" height="600"></canvas>
+      <p class="stylized" style="text-align: left">By Ryan Sandor Richards</p>
+    </div>
+    <script src="particle.js" type="text/javascript"></script>
+    <script type="text/javascript" charset="utf-8">
+      window.onload = function() {
+        function randomColor() {
+          return "rgb(" + [parseInt(Math.random()*255), parseInt(Math.random()*255), parseInt(Math.random()*255)].join(',') + ")";
+        }
+        
+        // Get the graphics context from the canvas
+        var g = document.getElementById('canvas').getContext('2d');
+        
+        // Create Some Emitters
+        ParticleJS.addEmitter('example1', {
+          position: [150, 150]
+        });
+        
+        ParticleJS.addEmitter('example2', {
+            position: [450, 150]
+          , initParticle: function() {
+            this.size = parseInt(Math.random() * 10) + 5;
+            this.color = randomColor();
+          }
+          , drawParticle: function(g) {
+            g.strokeStyle = this.color;
+            g.beginPath();
+            g.arc(this.x, this.y, this.size, 0, Math.PI*2, false);
+        		g.stroke();
+            g.closePath();
+          }
+        });
+        
+        var ex = 150, ey = 450, r = 50;
+        var dx = 0.5;
+        ParticleJS.addEmitter('example3', {
+            position: [ex, ey, r]
+          , xVelocity: [-0.5, 0.5]
+          , yVelocity: [-1, 0.1]
+          , spawnRate: 1.0
+          , updateEmitter: function() {
+            ex += dx;
+            if (ex >= 450 || ex <= 150)
+              dx *= -1;
+              
+            this.setOptions({
+              position: [ex, ey, r]
+            })
+          }
+          , initParticle: function() {
+            this.initialLife = this.life;
+          }
+          , drawParticle: function(g) {
+            var r = parseInt((this.life / this.initialLife) * 255);
+            
+            g.strokeStyle = "rgb(" + r + ",0,0)";
+            g.beginPath();
+            g.arc(this.x, this.y, 3, 0, Math.PI*2, false);
+            g.stroke();
+            g.closePath();
+          }
+        });
+        
+        // Begin the render/update loop
+        setInterval(function() {
+          g.clearRect(0, 0, 600, 600);
+          ParticleJS.draw(g);
+          ParticleJS.update();
+        }, 16);
+      }
+    </script>
+    <style type="text/css">
+    #canvas {
+      background-color: black;
+      border: 10px solid #777;
+      -moz-border-radius: 10px;
+      -webkit-border-radius: 10px;
+    }
+    #wrapper {
+      width: 620px;
+      margin: 0 auto;
+    }
+    body {
+      font-family: helvetica;
+      background-color: #444;
+    }
+    .stylized {
+      font-weight: bold;
+      margin: 0;
+      padding: 0;
+      font-size: 15px;
+      color: #aaa;
+      text-align: right;
+    }
+    </style>
+  </body>
+</html>
